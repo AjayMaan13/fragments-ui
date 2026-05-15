@@ -4,12 +4,20 @@
   "version": "0.0.1",
   "description": "Fragments UI testing web app",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AjayMaan13/fragments-ui.git"
   },
   "author": "Ajaypartap Singh Maan",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "parcel": "^2.13.3"
+  },
+  "dependencies": {
+    "oidc-client-ts": "^3.5.0"
+  }
 }
