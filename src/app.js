@@ -1,16 +1,19 @@
 // src/app.js
 
-import { signIn, getUser } from './auth';
+import { signIn, signOut, getUser } from './auth';
 
 async function init() {
   // Get our UI elements
   const userSection = document.querySelector('#user');
   const loginBtn = document.querySelector('#login');
+  const logoutBtn = document.querySelector('#logout');
 
-  // Wire up event handlers to deal with login and logout.
-  loginBtn.onclick = () => {
-    // Sign-in via the Amazon Cognito Hosted UI (requires redirects), see:
-    signIn();
+  loginBtn.onclick = () => signIn();
+
+  logoutBtn.onclick = async () => {
+    await signOut();
+    userSection.hidden = true;
+    loginBtn.disabled = false;
   };
 
   // See if we're signed in (i.e., we'll have a `user` object)
