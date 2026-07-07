@@ -11,7 +11,7 @@ const apiUrl = process.env.API_URL || 'http://localhost:8080';
 export async function getUserFragments(user) {
   console.log('Requesting user fragments data...');
   try {
-    const fragmentsUrl = new URL('/v1/fragments', apiUrl);
+    const fragmentsUrl = new URL('/v1/fragments?expand=1', apiUrl);
     const res = await fetch(fragmentsUrl, {
       // Generate headers with the proper Authorization bearer token to pass.
       // We are using the `authorizationHeaders()` helper method we defined
@@ -29,13 +29,13 @@ export async function getUserFragments(user) {
   }
 }
 
-// POST a new text fragment for the authenticated user
-export async function postUserFragment(user, text) {
-  console.log('Posting new fragment...');
+// POST a new fragment of the given type for the authenticated user
+export async function postUserFragment(user, text, type = 'text/plain') {
+  console.log('Posting new fragment...', { type });
   try {
     const res = await fetch(new URL('/v1/fragments', apiUrl), {
       method: 'POST',
-      headers: user.authorizationHeaders('text/plain'),
+      headers: user.authorizationHeaders(type),
       body: text,
     });
     if (!res.ok) {
@@ -43,6 +43,8 @@ export async function postUserFragment(user, text) {
     }
     const data = await res.json();
     console.log('Successfully created fragment', { data });
+    // Useful for proving the Location header is set correctly (Assignment 2 report)
+    console.log('Location header:', res.headers.get('Location'));
     return data;
   } catch (err) {
     console.error('Unable to call POST /v1/fragments', { err });

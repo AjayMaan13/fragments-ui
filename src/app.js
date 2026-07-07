@@ -9,6 +9,7 @@ async function init() {
   const loginBtn = document.querySelector('#login');
   const logoutBtn = document.querySelector('#logout');
   const createForm = document.querySelector('#create-form');
+  const fragmentType = document.querySelector('#fragment-type');
   const fragmentText = document.querySelector('#fragment-text');
   const fragmentsList = document.querySelector('#fragments-list');
 
@@ -35,14 +36,14 @@ async function init() {
   // Disable the Login button
   loginBtn.disabled = true;
 
-  // Fetch and display the user's fragment ids
+  // Fetch and display the user's fragments, with full metadata
   async function refreshFragments() {
     const data = await getUserFragments(user);
     fragmentsList.innerHTML = '';
-    (data?.fragments || []).forEach((id) => {
-      const li = document.createElement('li');
-      li.innerText = id;
-      fragmentsList.appendChild(li);
+    (data?.fragments || []).forEach((f) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${f.id}</td><td>${f.type}</td><td>${f.size}</td><td>${f.created}</td><td>${f.updated}</td>`;
+      fragmentsList.appendChild(tr);
     });
   }
 
@@ -51,7 +52,7 @@ async function init() {
     e.preventDefault();
     const text = fragmentText.value.trim();
     if (!text) return;
-    await postUserFragment(user, text);
+    await postUserFragment(user, text, fragmentType.value);
     fragmentText.value = '';
     await refreshFragments();
   };

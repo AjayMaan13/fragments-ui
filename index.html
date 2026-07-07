@@ -16,15 +16,32 @@
     <section hidden id="user">
       <h2>Welcome <span class="username"></span>!</h2>
 
-      <h3>Create a Text Fragment</h3>
+      <h3>Create a Fragment</h3>
       <form id="create-form">
+        <select id="fragment-type">
+          <option value="text/plain">Plain Text</option>
+          <option value="text/markdown">Markdown</option>
+          <option value="application/json">JSON</option>
+        </select>
+        <br />
         <textarea id="fragment-text" rows="4" cols="50" placeholder="Type your fragment here..."></textarea>
         <br />
         <button type="submit">Create Fragment</button>
       </form>
 
       <h3>Your Fragments</h3>
-      <ul id="fragments-list"></ul>
+      <table id="fragments-table" border="1" cellpadding="6">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Size</th>
+            <th>Created</th>
+            <th>Updated</th>
+          </tr>
+        </thead>
+        <tbody id="fragments-list"></tbody>
+      </table>
 
       <button id="logout">Logout</button>
     </section>
