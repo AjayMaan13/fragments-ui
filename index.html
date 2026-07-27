@@ -21,10 +21,17 @@
         <select id="fragment-type">
           <option value="text/plain">Plain Text</option>
           <option value="text/markdown">Markdown</option>
+          <option value="text/html">HTML</option>
+          <option value="text/csv">CSV</option>
           <option value="application/json">JSON</option>
+          <option value="application/yaml">YAML</option>
         </select>
         <br />
         <textarea id="fragment-text" rows="4" cols="50" placeholder="Type your fragment here..."></textarea>
+        <br />
+        <label for="fragment-file">Or upload an image (overrides the text area above):</label>
+        <br />
+        <input type="file" id="fragment-file" accept="image/png,image/jpeg,image/webp,image/avif,image/gif" />
         <br />
         <button type="submit">Create Fragment</button>
       </form>
@@ -38,6 +45,7 @@
             <th>Size</th>
             <th>Created</th>
             <th>Updated</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody id="fragments-list"></tbody>

@@ -29,24 +29,83 @@ export async function getUserFragments(user) {
   }
 }
 
-// POST a new fragment of the given type for the authenticated user
-export async function postUserFragment(user, text, type = 'text/plain') {
+// POST a new fragment of the given type for the authenticated user.
+// `data` can be a string (text/json/etc.) or an ArrayBuffer/Blob (images).
+export async function postUserFragment(user, data, type = 'text/plain') {
   console.log('Posting new fragment...', { type });
   try {
     const res = await fetch(new URL('/v1/fragments', apiUrl), {
       method: 'POST',
       headers: user.authorizationHeaders(type),
-      body: text,
+      body: data,
     });
     if (!res.ok) {
       throw new Error(`${res.status} ${res.statusText}`);
     }
-    const data = await res.json();
-    console.log('Successfully created fragment', { data });
+    const result = await res.json();
+    console.log('Successfully created fragment', { result });
     // Useful for proving the Location header is set correctly (Assignment 2 report)
     console.log('Location header:', res.headers.get('Location'));
-    return data;
+    return result;
   } catch (err) {
     console.error('Unable to call POST /v1/fragments', { err });
+  }
+}
+
+// GET the raw data for one of the authenticated user's fragments (used to
+// pre-fill the update form with the fragment's current content)
+export async function getUserFragmentData(user, id) {
+  console.log('Fetching fragment data...', { id });
+  try {
+    const res = await fetch(new URL(`/v1/fragments/${id}`, apiUrl), {
+      headers: { Authorization: `Bearer ${user.idToken}` },
+    });
+    if (!res.ok) {
+      throw new Error(`${res.status} ${res.statusText}`);
+    }
+    return await res.text();
+  } catch (err) {
+    console.error('Unable to call GET /v1/fragments/:id', { err });
+  }
+}
+
+// PUT new data for an existing fragment. The Content-Type must match the
+// fragment's existing type, since a fragment's type is immutable.
+// `data` can be a string or an ArrayBuffer/Blob (images).
+export async function updateUserFragment(user, id, data, type) {
+  console.log('Updating fragment...', { id, type });
+  try {
+    const res = await fetch(new URL(`/v1/fragments/${id}`, apiUrl), {
+      method: 'PUT',
+      headers: user.authorizationHeaders(type),
+      body: data,
+    });
+    if (!res.ok) {
+      throw new Error(`${res.status} ${res.statusText}`);
+    }
+    const result = await res.json();
+    console.log('Successfully updated fragment', { result });
+    return result;
+  } catch (err) {
+    console.error('Unable to call PUT /v1/fragments/:id', { err });
+  }
+}
+
+// DELETE an existing fragment for the authenticated user
+export async function deleteUserFragment(user, id) {
+  console.log('Deleting fragment...', { id });
+  try {
+    const res = await fetch(new URL(`/v1/fragments/${id}`, apiUrl), {
+      method: 'DELETE',
+      headers: user.authorizationHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error(`${res.status} ${res.statusText}`);
+    }
+    const result = await res.json();
+    console.log('Successfully deleted fragment', { result });
+    return result;
+  } catch (err) {
+    console.error('Unable to call DELETE /v1/fragments/:id', { err });
   }
 }
