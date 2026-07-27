@@ -8,15 +8,25 @@
     <script type="module" src="src/app.js"></script>
   </head>
   <body>
-    <h1>Fragments UI</h1>
-    <section>
-      <nav>
+    <header class="app-header">
+      <div class="brand">
+        <i class="ti ti-stack-2" aria-hidden="true"></i>
+        <span>Fragments</span>
+      </div>
+      <div class="header-actions">
+        <span class="username-badge" id="username-badge" hidden>
+          <i class="ti ti-user" aria-hidden="true"></i>
+          <span class="username"></span>
+        </span>
+        <button id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <i class="ti ti-moon" aria-hidden="true"></i>
+        </button>
         <button id="login">Login</button>
-      </nav>
-    </section>
-    <section hidden id="user">
-      <h2>Welcome <span class="username"></span>!</h2>
+        <button id="logout" hidden>Logout</button>
+      </div>
+    </header>
 
+    <section hidden id="user">
       <h3>Create a Fragment</h3>
       <form id="create-form">
         <select id="fragment-type">
@@ -51,8 +61,6 @@
         </thead>
         <tbody id="fragments-list"></tbody>
       </table>
-
-      <button id="logout">Logout</button>
     </section>
   </body>
 </html>

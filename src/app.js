@@ -9,11 +9,37 @@ import {
   deleteUserFragment,
 } from './api';
 
+// Apply a light/dark theme choice to the document and remember it
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const icon = document.querySelector('#theme-toggle i');
+  if (icon) {
+    icon.className = theme === 'dark' ? 'ti ti-sun' : 'ti ti-moon';
+  }
+}
+
+function initThemeToggle() {
+  const themeToggle = document.querySelector('#theme-toggle');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const savedTheme = localStorage.getItem('theme') || (prefersDark ? 'dark' : 'light');
+  applyTheme(savedTheme);
+
+  themeToggle.onclick = () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('theme', next);
+    applyTheme(next);
+  };
+}
+
 async function init() {
+  initThemeToggle();
+
   // Get our UI elements
   const userSection = document.querySelector('#user');
   const loginBtn = document.querySelector('#login');
   const logoutBtn = document.querySelector('#logout');
+  const usernameBadge = document.querySelector('#username-badge');
   const createForm = document.querySelector('#create-form');
   const fragmentType = document.querySelector('#fragment-type');
   const fragmentText = document.querySelector('#fragment-text');
@@ -25,7 +51,9 @@ async function init() {
   logoutBtn.onclick = async () => {
     await signOut();
     userSection.hidden = true;
-    loginBtn.disabled = false;
+    usernameBadge.hidden = true;
+    logoutBtn.hidden = true;
+    loginBtn.hidden = false;
   };
 
   // See if we're signed in (i.e., we'll have a `user` object)
@@ -36,12 +64,12 @@ async function init() {
 
   // Update the UI to welcome the user
   userSection.hidden = false;
+  usernameBadge.hidden = false;
+  logoutBtn.hidden = false;
+  loginBtn.hidden = true;
 
   // Show the user's username
-  userSection.querySelector('.username').innerText = user.username;
-
-  // Disable the Login button
-  loginBtn.disabled = true;
+  usernameBadge.querySelector('.username').innerText = user.username;
 
   // Fetch and display the user's fragments, with full metadata
   async function refreshFragments() {
