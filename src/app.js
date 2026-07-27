@@ -76,33 +76,66 @@ async function init() {
     const data = await getUserFragments(user);
     fragmentsList.innerHTML = '';
     (data?.fragments || []).forEach((f) => {
-      fragmentsList.appendChild(renderRow(f));
+      fragmentsList.appendChild(renderCard(f));
     });
   }
 
-  // Build a single <tr> for a fragment, with working Update/Delete buttons
-  function renderRow(f) {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${f.id}</td><td>${f.type}</td><td>${f.size}</td><td>${f.created}</td><td>${f.updated}</td><td class="actions"></td>`;
+  // Maps a fragment's mime type to a badge color class for quick scanning
+  function badgeClass(type) {
+    if (type.startsWith('image/')) return 'badge-image';
+    if (type === 'application/json' || type === 'application/yaml') return 'badge-data';
+    if (type === 'text/csv') return 'badge-csv';
+    return 'badge-text';
+  }
 
-    const actionsTd = tr.querySelector('.actions');
+  // Formats an ISO timestamp as e.g. "Jul 21, 14:24"
+  function formatDate(iso) {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    return d.toLocaleString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+
+  // Build a single fragment card, with working Update/Delete buttons
+  function renderCard(f) {
+    const card = document.createElement('div');
+    card.className = 'fragment-card';
+    card.innerHTML = `
+      <div class="fragment-card-top">
+        <span class="badge ${badgeClass(f.type)}">${f.type}</span>
+        <span class="fragment-size">${f.size} B</span>
+      </div>
+      <p class="fragment-id" title="${f.id}">${f.id}</p>
+      <p class="fragment-meta">
+        <i class="ti ti-clock" aria-hidden="true"></i>
+        Created ${formatDate(f.created)}
+      </p>
+      <div class="fragment-actions"></div>
+    `;
+
+    const actions = card.querySelector('.fragment-actions');
 
     const updateBtn = document.createElement('button');
     updateBtn.type = 'button';
-    updateBtn.innerText = 'Update';
-    updateBtn.onclick = () => startEdit(f, actionsTd);
+    updateBtn.innerHTML = '<i class="ti ti-edit" aria-hidden="true"></i> Update';
+    updateBtn.onclick = () => startEdit(f, actions);
 
     const deleteBtn = document.createElement('button');
     deleteBtn.type = 'button';
-    deleteBtn.innerText = 'Delete';
+    deleteBtn.className = 'btn-danger';
+    deleteBtn.innerHTML = '<i class="ti ti-trash" aria-hidden="true"></i> Delete';
     deleteBtn.onclick = async () => {
       if (!confirm(`Delete fragment ${f.id}?`)) return;
       await deleteUserFragment(user, f.id);
       await refreshFragments();
     };
 
-    actionsTd.append(updateBtn, deleteBtn);
-    return tr;
+    actions.append(updateBtn, deleteBtn);
+    return card;
   }
 
   // Replace a row's action buttons with an inline edit form. Image fragments
