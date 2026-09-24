@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Fragments UI</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
     <link rel="stylesheet" href="src/styles.css" />
@@ -28,31 +29,63 @@
 
     <section hidden id="user">
       <div class="panel">
-        <h3>Create a fragment</h3>
+        <h2>New fragment</h2>
         <form id="create-form">
-          <div class="form-row">
-            <select id="fragment-type">
-              <option value="text/plain">Plain Text</option>
-              <option value="text/markdown">Markdown</option>
-              <option value="text/html">HTML</option>
-              <option value="text/csv">CSV</option>
-              <option value="application/json">JSON</option>
-              <option value="application/yaml">YAML</option>
-              <option value="application/xml">XML</option>
-            </select>
-            <input type="file" id="fragment-file" accept="image/png,image/jpeg,image/webp,image/avif,image/gif" />
-            <input type="number" id="fragment-expires" min="1" max="2592000" placeholder="Expires in (seconds)" />
+          <div class="form-grid">
+            <label class="field">
+              <span>Type</span>
+              <select id="fragment-type">
+                <option value="text/plain">Plain text</option>
+                <option value="text/markdown">Markdown</option>
+                <option value="text/html">HTML</option>
+                <option value="text/csv">CSV</option>
+                <option value="application/json">JSON</option>
+                <option value="application/yaml">YAML</option>
+                <option value="application/xml">XML</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Expires</span>
+              <select id="fragment-expires">
+                <option value="">Never</option>
+                <option value="60">In 1 minute</option>
+                <option value="3600">In 1 hour</option>
+                <option value="86400">In 1 day</option>
+                <option value="604800">In 7 days</option>
+                <option value="2592000">In 30 days</option>
+              </select>
+            </label>
           </div>
-          <textarea id="fragment-text" rows="3" placeholder="Type your fragment here, or choose an image file above..."></textarea>
-          <button type="submit">
-            <i class="ti ti-plus" aria-hidden="true"></i>
-            Create fragment
-          </button>
+          <label class="field">
+            <span>Content</span>
+            <textarea id="fragment-text" rows="4" placeholder="Type or paste your content here..."></textarea>
+          </label>
+          <div class="form-footer">
+            <div class="file-picker">
+              <label class="btn-file" for="fragment-file">
+                <i class="ti ti-photo" aria-hidden="true"></i>
+                Attach an image instead
+              </label>
+              <input type="file" id="fragment-file" accept="image/png,image/jpeg,image/webp,image/avif,image/gif" hidden />
+              <span id="file-name" class="file-name" hidden></span>
+              <button type="button" id="file-clear" class="btn-icon" aria-label="Remove image" hidden>
+                <i class="ti ti-x" aria-hidden="true"></i>
+              </button>
+            </div>
+            <button type="submit" class="btn-primary">
+              <i class="ti ti-plus" aria-hidden="true"></i>
+              Create fragment
+            </button>
+          </div>
         </form>
       </div>
 
-      <h3>Your fragments</h3>
+      <div class="section-header">
+        <h2>Your fragments <span id="fragment-count"></span></h2>
+      </div>
       <div id="fragments-list" class="fragments-grid"></div>
     </section>
+
+    <div id="toast" role="status" aria-live="polite" hidden></div>
   </body>
 </html>

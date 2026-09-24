@@ -70,7 +70,7 @@ body {
 }
 
 body {
-  max-width: 900px;
+  max-width: 1040px;
   margin: 0 auto;
   padding: 1.5rem;
 }
@@ -131,6 +131,14 @@ textarea {
   padding: 8px 10px;
 }
 
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 input:focus,
 select:focus,
 textarea:focus {
@@ -139,79 +147,198 @@ textarea:focus {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent);
 }
 
-/* Create panel */
-
-.panel {
-  background: var(--surface-1);
-  border-radius: var(--radius-lg);
-  padding: 1rem 1.25rem;
-  margin-bottom: 1.5rem;
+/* The hidden attribute must win over component display rules */
+[hidden] {
+  display: none !important;
 }
 
-.panel h3 {
-  margin-bottom: 12px;
+/* Buttons */
+
+button,
+.btn-file {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
 }
 
-.form-row {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.form-row select {
-  flex: 0 0 160px;
-}
-
-.form-row input[type='file'] {
-  flex: 1;
-}
-
-.form-row input[type='number'] {
-  flex: 0 0 190px;
-}
-
-#create-form textarea {
-  width: 100%;
-  margin-bottom: 10px;
-  resize: vertical;
-}
-
-#create-form button[type='submit'] {
+.btn-primary {
   background: var(--accent);
   color: var(--on-accent);
   border-color: var(--accent);
 }
 
-#create-form button[type='submit']:hover {
+.btn-primary:hover {
   background: var(--accent-hover);
   border-color: var(--accent-hover);
 }
 
-/* Fragment cards */
+.btn-icon {
+  padding: 6px 8px;
+  line-height: 1;
+}
 
-.fragments-grid {
+.btn-danger {
+  color: var(--danger);
+  background: transparent;
+  border-color: transparent;
+}
+
+.btn-danger:hover {
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  border-color: transparent;
+}
+
+/* Create panel */
+
+.panel {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  margin-bottom: 2rem;
+}
+
+.panel h2 {
+  margin-bottom: 16px;
+}
+
+.form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.field > span {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.field select,
+.field textarea {
+  width: 100%;
+}
+
+.field textarea {
+  resize: vertical;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
 }
 
-.fragment-card {
+.file-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.btn-file {
+  font-size: 14px;
+  padding: 8px 14px;
   background: var(--surface-2);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.btn-file:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.file-name {
+  font-size: 13px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Fragment list */
+
+.section-header {
+  margin-bottom: 12px;
+}
+
+.section-header h2 span {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.fragments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 48px 16px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.empty-state i {
+  font-size: 32px;
+}
+
+.empty-state strong {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Fragment cards */
+
+.fragment-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 14px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.fragment-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 6%);
 }
 
 .fragment-card-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  gap: 8px;
 }
 
 .badge {
   font-size: 12px;
-  padding: 3px 9px;
+  font-weight: 500;
+  padding: 3px 10px;
   border-radius: 20px;
 }
 
@@ -256,57 +383,148 @@ textarea:focus {
 
 .fragment-id {
   font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin: 0 0 10px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: 15px;
+  color: var(--text-primary);
+  margin: 0;
   cursor: default;
 }
 
-.fragment-meta {
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
   font-size: 12px;
   color: var(--text-muted);
-  margin: 0 0 12px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
 
-.fragment-meta i {
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.chip i {
+  font-size: 14px;
+}
+
+.chip-expiry {
+  color: #b45309;
+}
+
+:root[data-theme='dark'] .chip-expiry {
+  color: #f0b45c;
+}
+
+.fragment-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-actions button {
+  font-size: 13px;
+  padding: 6px 10px;
+}
+
+.card-actions .btn-danger {
+  margin-left: auto;
+}
+
+.card-actions.editing {
+  flex-wrap: wrap;
+}
+
+.card-actions textarea {
+  flex: 1 1 100%;
+  font-family: var(--font-mono);
   font-size: 13px;
 }
 
-.fragment-actions {
+.download-row {
   display: flex;
   gap: 8px;
 }
 
-.fragment-actions select,
-.fragment-actions input {
+.download-row select {
   flex: 1;
   min-width: 0;
+  font-size: 13px;
+  padding: 6px 10px;
 }
 
-.fragment-actions button {
-  flex: 1;
+.download-row input {
+  flex: 0 0 120px;
+  min-width: 0;
   font-size: 13px;
+  padding: 6px 10px;
+}
+
+.share-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  background: var(--surface-0);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.share-row {
+  display: flex;
+  gap: 8px;
+}
+
+.share-row input {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
   padding: 6px 8px;
 }
 
-.fragment-actions textarea {
-  width: 100%;
-  margin-bottom: 8px;
+.share-row button {
+  font-size: 13px;
+  padding: 6px 10px;
 }
 
-.btn-danger {
-  color: var(--danger);
-  border-color: var(--danger);
+.share-note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
 }
 
-.btn-danger:hover {
-  background: color-mix(in srgb, var(--danger) 12%, transparent);
+/* Toast */
+
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 32px);
+  padding: 10px 16px;
+  font-size: 14px;
+  color: var(--surface-1);
+  background: var(--text-primary);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 25%);
+}
+
+#toast[hidden] {
+  display: none;
+}
+
+#toast.error {
+  color: #fff;
+  background: #a32d2d;
 }
 
 /* Header */
@@ -364,4 +582,28 @@ textarea:focus {
 
 #theme-toggle i {
   font-size: 16px;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 1rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .form-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-footer .btn-primary {
+    width: 100%;
+  }
+
+  .fragments-grid {
+    grid-template-columns: 1fr;
+  }
 }

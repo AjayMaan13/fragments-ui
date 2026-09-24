@@ -28,3 +28,34 @@ export const FORMATS = {
     ])
   ),
 };
+
+// Friendly names shown in the UI
+export const TYPE_LABELS = {
+  'text/plain': 'Plain text',
+  'text/markdown': 'Markdown',
+  'text/html': 'HTML',
+  'text/csv': 'CSV',
+  'application/json': 'JSON',
+  'application/yaml': 'YAML',
+  'application/xml': 'XML',
+  'image/png': 'PNG',
+  'image/jpeg': 'JPEG',
+  'image/webp': 'WebP',
+  'image/avif': 'AVIF',
+  'image/gif': 'GIF',
+};
+
+export const FORMAT_LABELS = {
+  '.pdf': 'PDF document',
+  '.docx': 'Word document',
+  '.html': 'HTML',
+  '.txt': 'Plain text',
+  '.json': 'JSON',
+  '.yaml': 'YAML',
+  '.xml': 'XML',
+  '.png': 'PNG image',
+  '.jpg': 'JPEG image',
+  '.webp': 'WebP image',
+  '.avif': 'AVIF image',
+  '.gif': 'GIF image',
+};
