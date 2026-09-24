@@ -7,7 +7,19 @@ import {
   getUserFragmentData,
   updateUserFragment,
   deleteUserFragment,
+  convertUserFragment,
+  shareUserFragment,
 } from './api';
+import { FORMATS } from './formats';
+
+// Save a Blob to the user's computer as a file
+function download(blob, filename) {
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+}
 
 // Apply a light/dark theme choice to the document and remember it
 function applyTheme(theme) {
@@ -44,6 +56,7 @@ async function init() {
   const fragmentType = document.querySelector('#fragment-type');
   const fragmentText = document.querySelector('#fragment-text');
   const fragmentFile = document.querySelector('#fragment-file');
+  const fragmentExpires = document.querySelector('#fragment-expires');
   const fragmentsList = document.querySelector('#fragments-list');
 
   loginBtn.onclick = () => signIn();
@@ -114,6 +127,12 @@ async function init() {
         <i class="ti ti-clock" aria-hidden="true"></i>
         Created ${formatDate(f.created)}
       </p>
+      <p class="fragment-meta">
+        <i class="ti ti-eye" aria-hidden="true"></i>
+        ${f.viewCount ?? 0} ${f.viewCount === 1 ? 'view' : 'views'}${
+          f.expiresAt ? ` · expires ${formatDate(new Date(f.expiresAt * 1000).toISOString())}` : ''
+        }
+      </p>
       <div class="fragment-actions"></div>
     `;
 
@@ -134,7 +153,47 @@ async function init() {
       await refreshFragments();
     };
 
-    actions.append(updateBtn, deleteBtn);
+    const shareBtn = document.createElement('button');
+    shareBtn.type = 'button';
+    shareBtn.innerHTML = '<i class="ti ti-share" aria-hidden="true"></i> Share';
+    shareBtn.onclick = async () => {
+      const share = await shareUserFragment(user, f.id);
+      if (!share) return alert('Could not create a share link');
+      prompt(`Anyone with this link can view it for ${Math.round(share.expiresIn / 60)} min:`, share.url);
+    };
+
+    actions.append(updateBtn, shareBtn, deleteBtn);
+
+    // "Convert to..." downloads the fragment in another format. Images can also
+    // be shrunk by typing a width first.
+    const targets = FORMATS[f.type.split(';')[0]] || [];
+    if (targets.length) {
+      const convertRow = document.createElement('div');
+      convertRow.className = 'fragment-actions';
+
+      const select = document.createElement('select');
+      select.innerHTML =
+        '<option value="">Convert to...</option>' +
+        targets.map((ext) => `<option value="${ext}">${ext}</option>`).join('');
+
+      const width = document.createElement('input');
+      width.type = 'number';
+      width.min = 1;
+      width.placeholder = 'width (px)';
+
+      select.onchange = async () => {
+        const ext = select.value;
+        select.value = '';
+        if (!ext) return;
+        const blob = await convertUserFragment(user, f.id, ext, width.value);
+        if (!blob) return alert(`Could not convert to ${ext}`);
+        download(blob, `${f.id}${ext}`);
+      };
+
+      convertRow.append(select);
+      if (f.type.startsWith('image/')) convertRow.append(width);
+      card.append(convertRow);
+    }
     return card;
   }
 
@@ -189,17 +248,19 @@ async function init() {
   createForm.onsubmit = async (e) => {
     e.preventDefault();
     const file = fragmentFile.files[0];
+    const expiresIn = fragmentExpires.value;
 
     if (file) {
       const buffer = await file.arrayBuffer();
-      await postUserFragment(user, buffer, file.type);
+      await postUserFragment(user, buffer, file.type, expiresIn);
       fragmentFile.value = '';
     } else {
       const text = fragmentText.value.trim();
       if (!text) return;
-      await postUserFragment(user, text, fragmentType.value);
+      await postUserFragment(user, text, fragmentType.value, expiresIn);
       fragmentText.value = '';
     }
+    fragmentExpires.value = '';
 
     await refreshFragments();
   };

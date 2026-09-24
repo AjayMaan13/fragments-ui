@@ -31,10 +31,12 @@ export async function getUserFragments(user) {
 
 // POST a new fragment of the given type for the authenticated user.
 // `data` can be a string (text/json/etc.) or an ArrayBuffer/Blob (images).
-export async function postUserFragment(user, data, type = 'text/plain') {
-  console.log('Posting new fragment...', { type });
+// `expiresIn` (seconds) makes the fragment delete itself after that long.
+export async function postUserFragment(user, data, type = 'text/plain', expiresIn) {
+  console.log('Posting new fragment...', { type, expiresIn });
   try {
-    const res = await fetch(new URL('/v1/fragments', apiUrl), {
+    const query = expiresIn ? `?expiresIn=${expiresIn}` : '';
+    const res = await fetch(new URL(`/v1/fragments${query}`, apiUrl), {
       method: 'POST',
       headers: user.authorizationHeaders(type),
       body: data,
@@ -107,5 +109,39 @@ export async function deleteUserFragment(user, id) {
     return result;
   } catch (err) {
     console.error('Unable to call DELETE /v1/fragments/:id', { err });
+  }
+}
+
+// GET a fragment converted to another format (`ext` like '.pdf'). For images,
+// `width` (pixels) also shrinks it. Resolves to a Blob.
+export async function convertUserFragment(user, id, ext, width) {
+  console.log('Converting fragment...', { id, ext, width });
+  try {
+    const query = width ? `?width=${width}` : '';
+    const res = await fetch(new URL(`/v1/fragments/${id}${ext}${query}`, apiUrl), {
+      headers: { Authorization: `Bearer ${user.idToken}` },
+    });
+    if (!res.ok) {
+      throw new Error(`${res.status} ${res.statusText}`);
+    }
+    return await res.blob();
+  } catch (err) {
+    console.error('Unable to call GET /v1/fragments/:id.ext', { err });
+  }
+}
+
+// Ask for a temporary public link to a fragment. Resolves to { url, expiresIn, expiresAt }.
+export async function shareUserFragment(user, id) {
+  console.log('Creating share link...', { id });
+  try {
+    const res = await fetch(new URL(`/v1/fragments/${id}/share`, apiUrl), {
+      headers: { Authorization: `Bearer ${user.idToken}` },
+    });
+    if (!res.ok) {
+      throw new Error(`${res.status} ${res.statusText}`);
+    }
+    return await res.json();
+  } catch (err) {
+    console.error('Unable to call GET /v1/fragments/:id/share', { err });
   }
 }

@@ -166,6 +166,10 @@ textarea:focus {
   flex: 1;
 }
 
+.form-row input[type='number'] {
+  flex: 0 0 190px;
+}
+
 #create-form textarea {
   width: 100%;
   margin-bottom: 10px;
@@ -277,6 +281,12 @@ textarea:focus {
 .fragment-actions {
   display: flex;
   gap: 8px;
+}
+
+.fragment-actions select,
+.fragment-actions input {
+  flex: 1;
+  min-width: 0;
 }
 
 .fragment-actions button {
