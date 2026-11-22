@@ -4,9 +4,12 @@
   "version": "0.0.1",
   "description": "Fragments UI testing web app",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run test:e2e",
     "start": "parcel index.html",
-    "build": "parcel build index.html"
+    "build": "parcel build index.html",
+    "build:e2e": "AWS_COGNITO_POOL_ID=us-east-2_TESTPOOL AWS_COGNITO_CLIENT_ID=testclientid OAUTH_SIGN_IN_REDIRECT_URL=http://localhost:4173 API_URL=http://localhost:4173 parcel build index.html --dist-dir dist-e2e --no-cache",
+    "test:e2e": "playwright test",
+    "test:e2e:live": "E2E_LIVE=1 playwright test"
   },
   "repository": {
     "type": "git",
@@ -15,6 +18,7 @@
   "author": "Ajaypartap Singh Maan",
   "license": "UNLICENSED",
   "devDependencies": {
+    "@playwright/test": "^1.65.1",
     "parcel": "^2.13.3"
   },
   "dependencies": {

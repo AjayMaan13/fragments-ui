@@ -1,0 +1,63 @@
+# .github/workflows/live-e2e.yml
+
+# Tier 2: drives the REAL Cognito login and the DEPLOYED API in a real browser.
+# Manual only: it needs the stack to be up (`terraform apply`) and a test user.
+#
+# One-time setup in the repo's Settings > Secrets and variables > Actions:
+#   Variables: AWS_COGNITO_POOL_ID, AWS_COGNITO_CLIENT_ID, E2E_API_URL (e.g. http://<alb-dns>)
+#   Secrets:   E2E_USERNAME, E2E_PASSWORD   (a Cognito test user; see fragments/perf/README.md)
+#
+# The UI is built with the real ids and served on http://localhost:1234, because
+# that is the callback URL the Cognito app client allows.
+name: live-e2e
+
+on:
+  workflow_dispatch:
+
+jobs:
+  live:
+    name: Live end-to-end test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+
+      - name: Setup node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+
+      - name: Install node dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Build the UI against the deployed stack
+        env:
+          AWS_COGNITO_POOL_ID: ${{ vars.AWS_COGNITO_POOL_ID }}
+          AWS_COGNITO_CLIENT_ID: ${{ vars.AWS_COGNITO_CLIENT_ID }}
+          OAUTH_SIGN_IN_REDIRECT_URL: http://localhost:1234
+          API_URL: ${{ vars.E2E_API_URL }}
+        run: npx parcel build index.html --dist-dir dist-e2e --no-cache
+
+      - name: Serve the UI on the allowed callback port
+        run: |
+          PORT=1234 node e2e/serve.mjs &
+          npx --yes wait-on http://localhost:1234
+
+      - name: Run the live test
+        env:
+          E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
+          E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+        run: npm run test:e2e:live
+
+      - name: Upload the Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-live
+          path: playwright-report/
+          retention-days: 7
+          if-no-files-found: ignore
