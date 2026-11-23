@@ -1,5 +1,29 @@
 # fragments-ui
-a simple web app to manage authentication with our User Pool on AWS Cognito and test our back-end fragments microservice
+
+[![ci](https://github.com/AjayMaan13/fragments-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/AjayMaan13/fragments-ui/actions/workflows/ci.yml)
+
+A small browser app for the [fragments API](https://github.com/AjayMaan13/fragments): sign in with Amazon Cognito (OAuth authorization-code flow with PKCE, via `oidc-client-ts`) and create, view, update, delete, convert, download and share your fragments.
+
+## What you can do
+
+- **Sign in** with the Cognito hosted login; the app sends your ID token as a bearer token on every API call
+- **Create** text, markdown, HTML, CSV, JSON, YAML or XML fragments, or attach an image, optionally with an expiry
+- **See** your fragments newest first, with type, size, view count and expiry
+- **Update** a fragment's content (its type can't change) and **delete** it, with a confirmation
+- **Download as...**: convert a fragment to another format (PDF, Word, HTML, YAML, an image format, ...) and save it; images can be shrunk by width first
+- **Share** a fragment with a temporary public link
+- Light and dark themes, and clear messages when the API is down or rejects a request
+
+The API also does semantic search and background conversions; the UI doesn't have screens for those yet.
+
+## Run it
+
+```bash
+cp .env.example .env   # fill in the Cognito ids and API_URL
+npm install
+npm start              # http://localhost:1234
+```
+
 
 
 ## Tests
